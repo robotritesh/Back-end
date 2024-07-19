@@ -1,0 +1,9 @@
+
+ the method is GET and the api end-point is /about and 
+                     the time is Thu Jul 18 2024 06:22:21 GMT+0530 (India Standard Time) 
+ the method is GET and the api end-point is /home and 
+                     the time is Thu Jul 18 2024 06:22:31 GMT+0530 (India Standard Time) 
+ the method is GET and the api end-point is /school and 
+                     the time is Thu Jul 18 2024 06:22:43 GMT+0530 (India Standard Time) 
+ the method is POST and the api end-point is /school and 
+                     the time is Thu Jul 18 2024 06:22:54 GMT+0530 (India Standard Time) 
