@@ -1,0 +1,4 @@
+method: GET url:/list
+method: GET url:/list
+method: GET url:/signup
+method: POST url:/signup
