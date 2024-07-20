@@ -1,7 +1,5 @@
-{
-  "users": [
+"users": [
     { "id": 1, "name": "Raj", "gendaer": "Male" },
     { "id": 49, "name": "Ritesh", "grnder": "Male" },
     { "id": 87, "name": "shailesh", "grnder": "Male" }
   ]
-}
