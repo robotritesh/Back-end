@@ -1,0 +1,229 @@
+MongoDB Aggregations
+[documentation]()
+What is aggregation in MongoDB
+Let’s first understand below analogy.
+ Imagine you are a chef tasked with creating a mouthwatering dish for your guests. You start by gathering a variety of ingredients, each with its own unique flavor and texture.
+Similarly, MongoDB Aggregation gathers data from multiple documents in a collection, which can be thought of as the ingredients that make up your dish.
+Next, you carefully chop, mix, and cook your ingredients, using your culinary skills to transform them into a cohesive and delicious meal.
+In the same way, MongoDB Aggregation applies a series of operations to the data it has gathered, such as filtering, sorting, grouping, and transforming it, to produce a structured and organized output that meets your specific requirements.
+Finally, you artfully plate your dish, using presentation techniques to make it look as good as it tastes. MongoDB Aggregation also returns the results in a structured and easy-to-understand format, allowing you to easily analyze and present the data to others.
+Just as a chef takes pride in creating a memorable dining experience, MongoDB Aggregation helps developers and analysts create insightful and meaningful insights from their data.
+Aggregation:
+Aggregation refers to performing data processing operations on data stored in a MongoDB collection.
+It involves grouping, filtering, sorting, and transforming data to obtain meaningful insights.
+Aggregation in MongoDB is performed using the aggregation framework, which is a set of operators and stages.
+Pipeline:
+A pipeline in MongoDB is a sequence of stages that are applied to a collection of data in a specific order to perform aggregation operations.
+Each stage in the pipeline takes the output of the previous stage as input and produces a new output, which is then passed to the next stage.
+The pipeline is composed of one or more stages, which can be used to perform operations such as filtering, grouping, projecting, sorting, and aggregating data.
+Stages:
+A stage in MongoDB is a specific operation or step in the aggregation pipeline that performs a specific action on the data.
+Each stage takes a set of inputs and produces a set of outputs, which are then passed to the next stage in the pipeline.
+Some common stages in the MongoDB aggregation pipeline include $match, $group, $project, $sort, $limit, and $skip.
+The $lookup stage is also commonly used for performing join-like operations between collections.
+Stages can be used to perform a wide variety of data processing operations, making the MongoDB aggregation pipeline a powerful tool for data analysis and reporting.
+The basic syntax for aggregation in MongoDB is as follows:
+db.collection.aggregate( [ aggregation operation ] )
+​
+Basic Pipeline with $limit operator
+The $limit operator in MongoDB aggregation pipeline limits the number of documents passed to the next stage of the pipeline. It takes a single numerical argument that specifies the maximum number of documents to pass along.
+For example, let's say we want to retrieve only the first three documents from the dataset provided in the question. We can use the $limit operator in the aggregation pipeline as follows:
+db.pizzas.aggregate([
+  { $limit: 3 }
+])
+​
+It will return 
+[ 
+ { "_id" : 0, "name" : "Pepperoni", "size" : "small", "price" : 19, "quantity" : 10, "date" : ISODate("2021-03-13T08:14:30Z") },
+  { "_id" : 1, "name" : "Pepperoni", "size" : "medium", "price" : 20, "quantity" : 20, "date" : ISODate("2021-03-13T09:13:24Z") },
+  { "_id" : 2, "name" : "Pepperoni", "size" : "large", "price" : 21, "quantity" : 30, "date" : ISODate("2021-03-17T09:22:12Z") }
+]
+​
+It's important to note that the $limitoperator should be used early in the pipeline to avoid unnecessary processing of additional documents. If used later in the pipeline, it may not have any effect since all documents have already been processed by the earlier stages.
+$limit Operator 
+We can add a $sortstage to sort the documents by the pricefield in ascending order, and then use the $limitoperator to retrieve only the first three documents. Here's the updated aggregation pipeline:
+db.pizzas.aggregate([
+  { $sort: { price: 1 } },
+  { $limit: 3 }
+])
+​
+The $sort operator takes an object as its argument, where the keys are the field(s) to sort by and the values are the sort order (1 for ascending and -1 for descending). In this case, we're sorting by the price field in ascending order (1).
+This will return the following output:
+[ 
+ { "_id" : 3, "name" : "Cheese", "size" : "small", "price" : 12, "quantity" : 15, "date" : ISODate("2021-03-13T11:21:39.736Z") }, 
+ { "_id" : 4, "name" : "Cheese", "size" : "medium", "price" : 13, "quantity" : 50, "date" : ISODate("2022-01-12T21:23:13.331Z") }, 
+ { "_id" : 5, "name" : "Cheese", "size" : "large", "price" : 14, "quantity" : 10, "date" : ISODate("2022-01-12T05:08:13Z") }
+]
+​
+As you can see, the documents are sorted by the pricefield in ascending order and then only the first three documents are returned by the $limitoperator.
+How stage order matters:
+the order of stages in the MongoDB aggregation pipeline can affect the final result. In general, the order of stages should be chosen based on the desired output and the performance of the query.
+Let's take the previous example of using the $sort and $limit stages to return the three documents with the highest prices. If we change the order of the stages, we'll get a different result:
+db.pizzas.aggregate([
+  { $limit: 3 },
+  { $sort: { price: -1 } }
+])
+​
+In this case, we're applying the $limit stage before the $sort stage. This means that we'll get the first three documents in the collection, and then sort them by the price field in descending order.
+The output of this query will be:
+[ 
+ { "_id" : 2, "name" : "Pepperoni", "size" : "large", "price" : 21, "quantity" : 30, "date" : ISODate("2021-03-17T09:22:12Z") }, 
+
+ { "_id" : 1, "name" : "Pepperoni", "size" : "medium", "price" : 20, "quantity" : 20, "date" : ISODate("2021-03-13T09:13:24Z") },
+
+  { "_id" : 5, "name" : "Cheese", "size" : "large", "price" : 14, "quantity" : 10, "date" : ISODate("2022-01-12T05:08:13Z") }
+]
+​
+As you can see, the result is different from the previous example where the $sortstage wa applied before the $limitstage. This is because the $limit
+ stage returns the first three documents in the collection (based on the default order), and then the $sortstage sorts those three documents by the pricefield in descending order.
+Therefore, the order of stages in the MongoDB aggregation pipeline can have a significant impact on the final result, and it's important to choose the right order based on the desired output and the performance of the query.
+$match Operator 
+Let's add the $matchstage to the pipeline we've been working with:
+db.pizzas.aggregate([
+  { $sort: { price: -1 } },
+  { $limit: 3 },
+  { $match: { name: "Pepperoni" } }
+])
+​
+In this pipeline, we've added the $match stage after the $limit stage. The $match stage filters the documents based on a specified condition.
+In this example, we're filtering the documents based on the name field being "Pepperoni". This means that only documents with the name field set to "Pepperoni" will be included in the final output.
+The order of stages in the pipeline is important because each stage operates on the output of the previous stage. In this case, the $match stage operates on the output of the $limit stage, which in turn operates on the output of the $sort stage.
+The final output of this pipeline will be:
+[ 
+ { "_id" : 2, "name" : "Pepperoni", "size" : "large", "price" : 21, "quantity" : 30, "date" : ISODate("2021-03-17T09:22:12Z") }
+]
+​
+As you can see, only one document is included in the final output because it's the only one with the name field set to "Pepperoni" among the three documents returned by the $limit stage. The documents are first sorted by the price field in descending order, then the $limit stage returns the first three documents in that order, and finally, the $match stage filters out the documents that don't match the specified condition.
+So, the $match stage can be used to filter the documents based on a specified condition after the initial stages like $sort and $limit have been applied to the entire collection.
+$group operator
+let's add the $groupstage to the pipeline we've been working with:
+db.pizzas.aggregate([
+  { $sort: { price: -1 } },
+  { $limit: 3 },
+  { $match: { name: "Pepperoni" } },
+  { $group: { _id: "$size", total_quantity: { $sum: "$quantity" } } }
+])
+​
+The $group stage is used to group documents together based on a specified field or set of fields, and then perform aggregate functions on each group.
+In this example, we're grouping the documents by the size field, and then using the $sum operator to calculate the total quantity of each size.
+The _id field in the $group stage specifies the field to group by. In this case, we're grouping by the size field. The total_quantity field in the $group stage uses the $sum operator to calculate the total quantity of each size.
+The order of stages in the pipeline is important because each stage operates on the output of the previous stage. In this case, the $group stage operates on the output of the $match stage, which in turn operates on the output of the $limit stage, and so on.
+The final output of this pipeline will be:
+[
+  { "_id" : "small", "total_quantity" : 10 }, 
+ { "_id" : "medium", "total_quantity" : 20 }, 
+ { "_id" : "large", "total_quantity" : 30 }
+]
+​
+As you can see, the documents have been grouped by the size field, and the total_quantity field has been calculated for each group. The documents are first sorted by the price field in descending order, then the $limit stage returns the first three documents in that order, the $match stage filters out the documents that don't match the specified condition, and finally, the $group stage groups the remaining documents by the size field and calculates the total quantity for each group.
+So, the $group stage is useful for performing aggregate functions on groups of documents based on a specified field or set of fields.
+$project 
+$project is one of the most commonly used stages in the MongoDB Aggregation Pipeline. It is used to reshape or transform the input documents, usually by including or excluding fields, creating new fields, renaming fields, or calculating new values.
+The syntax for $project is as follows:
+{
+  $project: {
+    <output-field1>: <expression1>,
+    <output-field2>: <expression2>,
+    ...
+  }
+}
+​
+In the above syntax, each output field is mapped to an expression that defines how to compute the value of that field. The expression can be any valid aggregation expression or a combination of them.
+For example, let's use the $project stage to only include the name and price fields from the Pizzas dataset:
+db.pizzas.aggregate([
+  {
+    $project: {
+      name: 1,
+      price: 1
+    }
+  }
+])
+​
+In the above example, we are including only the name and price fields in the output. The 1 values indicate that we want to include these fields in the output, while 0 values would indicate that we want to exclude them.
+Suppose, we want to find the total revenue generated by each pizza size and name for pizzas sold in 2022. We can use the following aggregation pipeline:
+db.pizzas.aggregate([
+  {
+    $match: { date: { $gte: ISODate("2022-01-01"), $lt: ISODate("2023-01-01") } }
+  },
+  {
+    $group: {
+      _id: { name: "$name", size: "$size" },
+      revenue: { $sum: { $multiply: ["$price", "$quantity"] } }
+    }
+  },
+  {
+    $sort: { "_id.name": 1, "_id.size": 1 }
+  },
+  {
+    $project: {
+      _id: 0,
+      name: "$_id.name",
+      size: "$_id.size",
+      revenue: 1
+    }
+  }
+])
+​
+Here's what each stage of the pipeline does:
+$match: Filters the documents to only include those with a date field in 2022.
+$group: Groups the documents by pizza name and size, and calculates the total revenue for each group using the $sum operator and the product of price and quantity fields.
+$sort: Sorts the resulting documents by pizza name and then by size.
+$project: Projects only the name, size, and revenue fields, and renames the _id.name and _id.size fields to name and size, respectively.
+The resulting documents will show the total revenue generated by each pizza name and size combination in 2022, sorted alphabetically by name and size. The _id field will not be included in the output, and the name and size fields will have their names changed to be more readable.
+Here are some important points to keep in mind about projections in MongoDB:
+Projections can be used to specify the fields that should be returned in the query results. This can improve query performance and reduce the amount of data that needs to be transferred.
+Projections can be used in both find and aggregate queries.
+Projections can include or exclude fields from the query results. Use 1 to include a field and 0 to exclude a field.
+The _id field is included in query results by default. You can exclude it by using _id: 0 in the projection.
+Projections can include computed fields, which are created by applying expressions to existing fields. Computed fields are specified using the same syntax as regular fields, but with an expression as the value.
+Projections can include fields from embedded documents and arrays using dot notation.
+In an aggregation pipeline, the $project stage is used to shape and transform the documents that pass through the pipeline.
+When using projections, it's important to consider the impact on performance and data transfer. Including only the fields that are needed can improve query performance and reduce the amount of data that needs to be transferred.
+$skip 
+The $skip operator is used in the MongoDB aggregation pipeline to skip a certain number of documents before passing them to the next stage. It takes an integer value as its argument, which represents the number of documents to be skipped.
+For example, consider the following pipeline using the pizzas collection:
+db.pizzas.aggregate([
+  { $match: { name: "Pepperoni" } },
+  { $sort: { price: -1 } },
+  { $skip: 1 },
+  { $project: { _id: 0, name: 1, size: 1, price: 1 } }
+])
+​
+This pipeline first matches documents with name equal to "Pepperoni", then sorts them in descending order of price, skips the first document, and finally projects only the name, size, and price fields, excluding the _id field.
+Suppose the pizzas collection has the following documents:
+[
+  { _id: 0, name: "Pepperoni", size: "small", price: 19 },
+  { _id: 1, name: "Pepperoni", size: "medium", price: 20 },
+  { _id: 2, name: "Pepperoni", size: "large", price: 21 },
+  { _id: 3, name: "Cheese", size: "small", price: 12 },
+  { _id: 4, name: "Cheese", size: "medium", price: 13 },
+  { _id: 5, name: "Cheese", size: "large", price: 14 },
+  { _id: 6, name: "Vegan", size: "small", price: 17 },
+  { _id: 7, name: "Vegan", size: "medium", price: 18 }
+]
+​
+The $matchstage will first filter out documents with nameequal to "Pepperoni":
+[
+  { _id: 0, name: "Pepperoni", size: "small", price: 19 },
+  { _id: 1, name: "Pepperoni", size: "medium", price: 20 },
+  { _id: 2, name: "Pepperoni", size: "large", price: 21 }
+]
+​
+The $sortstage will then sort them in descending order of price:
+[
+  { _id: 2, name: "Pepperoni", size: "large", price: 21 },
+  { _id: 1, name: "Pepperoni", size: "medium", price: 20 },
+  { _id: 0, name: "Pepperoni", size: "small", price: 19 }
+]
+​
+The $skipstage will then skip the first document:
+[
+  { _id: 1, name: "Pepperoni", size: "medium", price: 20 },
+  { _id: 0, name: "Pepperoni", size: "small", price: 19 }
+]
+​
+Finally, the $projectstage will project only the name, size, and price fields:
+[
+  { name: "Pepperoni", size: "medium", price: 20 },
+  { name: "Pepperoni", size: "small", price: 19 }
+]

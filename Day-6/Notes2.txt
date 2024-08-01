@@ -1,0 +1,33 @@
+Give me all the unique genders from the database SQL:-
+select genders from Customers group by gender;
+MONGO:-
+
+db.Customers.aggregate([{$group: {_id: "$gender"}}])
+Give me all the unique genders and the number of people from each gender SQL:-
+SELECT gender, COUNT(*)
+FROM customers
+GROUP BY gender;
+MONGO:-
+
+db.Customers.aggregate([{$group: {_id: "$gender", count: {$count: {}}}}])
+
+Give me all the unique genders and the average age of each gender
+db.Customers.aggregate([{$group: {_id: "$gender", AverageAge: {$avg: "$salary"}}}])
+Give me the avg of all the people
+db.Customers.aggregate([{$group: {_id: 1, AverageAge: {$avg: "$salary"}}}])
+Group by first_name and age SQL:-
+select first_name, age from customers group by first_name, age
+
+MONGO:-
+
+ db.Customers.aggregate([{$group: {_id: {name: "$first_name", gender: "$gender"}, AverageAge: {$avg: "$salary"}}}])
+I want to get the unique gender of those people who are above the age 50 and their avg sal
+db.Customers.aggregate([
+    {$match: {age: {$gte: 50}}}, 
+    {$group: {_id: "$gender", average: {$avg: "$salary"}}}
+])
+
+I want to get all the unique genders and the average sal where avg sal is >= 25000
+db.Customers.aggregate([{$group: {_id: "$gender", AverageAge: {$avg: "$salary"}}}, {$match: {AverageAge: {$gte: 25000}}}])
+Print the full name of all those users who have age >= 40
+db.Customers.aggregate([{$project: {full_name: {$concat: ["$first_name", " ", "$last_name"]}, age: 1}}, {$match: {age: {$gte: 40}}}])
