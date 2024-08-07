@@ -37,8 +37,8 @@ app.post('/profile', upload.single('avatar'),async function (req, res, next) {
     //console.log(req.file)
 
     cloudinary.config({ 
-        cloud_name: 'dayhgdxot', 
-        api_key: '427452141654331', 
+        cloud_name: 'dayhgdxot',
+        api_key: '427452141654331',
         api_secret: process.env.api_secret
     });
 
