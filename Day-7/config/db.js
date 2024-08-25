@@ -1,6 +1,7 @@
 const mongoose = require("mongoose")
+const dotenv = require("dotenv").config()
 
-const url = "mongodb://127.0.0.1:27017/glassCap04"
+const url = process.env.MONGO_URL
 
 const connection = mongoose.connect(url)
 
