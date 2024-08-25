@@ -1,0 +1,140 @@
+In our case where are we going to see relationships:
+    ==> DB
+        ==> Collections --> hr, marketing, operations, tech     --> emp
+            ==> Documents
+
+            ==> In our case we are going to see relationship in case of collections.
+
+Types of Relationships:
+    => 1 - 1 
+    => 1 - Many
+    => Many - Many
+
+Why do we need relationships?
+
+hr ==> {
+    name
+    age
+    address
+    blood
+    phone
+    department
+    exp
+    location
+}
+
+marketing ==> {
+    name
+    age
+    address
+    blood
+    phone
+    department
+    exp
+    location
+}
+
+tech ==> {
+    name
+    age
+    address
+    blood
+    phone
+    department
+    exp
+    location
+}
+
+Questions => Get the details of all the emp from pune
+            ==> db.hr.find({location:"Pune"}) -> Gives your HR emp
+            ==> db.marketing.find({location:"Pune"}) -> Gives your marketing emp
+            ==> db.tech.find({location:"Pune"}) -> Gives your tech emp
+
+Solution to the problem:
+    => Just create one more collection called emp, and link all other collection to it.
+            ==> db.emp.find({location:"Pune"})
+
+1 - 1 Relationships ==> When 1 collectioion connected to a single collection
+
+    *students collection ==> Dependent
+        {
+            _id:"-----" ==> Unique ID
+            student_code
+            user_id:"-----"
+        }
+    
+    *users Collections ==> Independent
+        {
+            _id:"-----" ==> Unique ID
+            name
+            email
+            gender
+            city
+            blood
+            phone
+            batch
+        }
+1st Method: We can put user id in the student's schema
+2nd Method: We can put the student's id in users schema
+BEST WAY ==> Put independent's id inside dependent's schema
+
+1 - Many Relationships
+1 user can have multiple posts. 1 user can be connected to multiple posts
+Linkedin:
+    ==> users
+        ==> posts
+
+    db.users.find()
+    users=[
+        {
+            id
+            name
+            email
+            pass
+            posts:
+        },
+        {
+            id
+            name
+            email
+            pass
+            posts:
+        },
+        {
+            id
+            name
+            email
+            pass
+            posts:
+        }.........10000
+    ]
+
+    posts=[
+        {
+            user_id:450
+        },
+        {
+            user_id:67
+        },
+        {
+            user_id:87
+        }
+    ]
+
+BEST WAY ==> Put independent's(users) id inside dependent's(posts) schema
+    
+Many - Many Relationships
+
+==> Multiple Posts can have multiple hastags(#sunset,#biking...)
+==> Those multiple hastags can be used on multiple pictures as well
+
+==> Both of them are interdependent on each other
+BEST WAY==> We can wither put the post id in hastag schema oe hastga id in post schema 
+
+
+Relationships
+    => What? 
+    => Why?
+    => Types?
+    => Best way of forming the connection?
+    => Examples?
