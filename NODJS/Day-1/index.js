@@ -1,6 +1,10 @@
-a = 2232;
-b = 23;
+function add (a, b){
+    return a+b
+}
 
-c = a + b
 
-console.log(c)
+
+
+// console.log(process.argv)
+
+console.log(add(Number(process.argv[2]),Number(process.argv[3])))
